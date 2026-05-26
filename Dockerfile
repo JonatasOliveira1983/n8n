@@ -26,5 +26,6 @@ ENV WEBHOOK_URL=https://n8n-production-8e2d4.up.railway.app
 # Informa ao Railway qual porta o Nginx estará escutando (8080)
 EXPOSE 8080
 
-# Inicia usando o nosso script que levanta N8N e Nginx juntos
-CMD ["/start.sh"]
+# Sobrescreve o ENTRYPOINT da imagem base n8n para executar nosso script diretamente
+# (imagem base tem ENTRYPOINT próprio que ignora CMD)
+ENTRYPOINT ["tini", "--", "/start.sh"]
