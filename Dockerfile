@@ -1,7 +1,9 @@
 FROM docker.n8n.io/n8nio/n8n
 
-# CACHEBUST: altere este valor para invalidar o cache Docker manualmente
-ARG CACHEBUST=1
+# CACHEBUST: altere este valor para forçar um rebuild completo no Railway
+ARG CACHEBUST=2
+# Usa o ARG em um RUN para realmente invalidar o cache Docker
+RUN echo "[BUILD] Cache bust: $CACHEBUST"
 
 USER root
 
@@ -21,7 +23,7 @@ RUN nginx -t
 # 2) Executa o n8n real em foreground
 # Isso funciona mesmo que o Railway use "n8n" como Start Command (locked)
 RUN mv /usr/local/bin/n8n /usr/local/bin/n8n.real && \
-    printf '#!/bin/sh\nnginx 2>/tmp/nginx-wrapper-error.log\nexec /usr/local/bin/n8n.real "$@"\n' > /usr/local/bin/n8n && \
+    printf '#!/bin/sh\necho "[WRAPPER] Starting nginx on port 8080..."\nnginx 2>/tmp/nginx-wrapper-error.log\nif [ $? -eq 0 ]; then\n  echo "[WRAPPER] nginx started successfully"\nelse\n  echo "[WRAPPER] WARNING: nginx failed to start, check /tmp/nginx-wrapper-error.log"\nfi\nexec /usr/local/bin/n8n.real "$@"\n' > /usr/local/bin/n8n && \
     chmod +x /usr/local/bin/n8n
 
 # Mantém o start.sh como alternativa para debug manual
