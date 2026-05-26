@@ -46,6 +46,18 @@ const server = http.createServer((req, res) => {
       if (key) delete proxyRes.headers[key];
     });
 
+    // Fix cookies for iframe embedding (Third-Party Context)
+    if (proxyRes.headers['set-cookie']) {
+      let cookies = proxyRes.headers['set-cookie'];
+      if (!Array.isArray(cookies)) cookies = [cookies];
+      proxyRes.headers['set-cookie'] = cookies.map(cookie => {
+        let newCookie = cookie;
+        newCookie = newCookie.replace(/;\s*SameSite=(Lax|Strict|None)/ig, '');
+        newCookie = newCookie.replace(/;\s*Secure/ig, '');
+        return newCookie + '; SameSite=None; Secure';
+      });
+    }
+
     res.writeHead(proxyRes.statusCode, proxyRes.headers);
     proxyRes.pipe(res);
   });
