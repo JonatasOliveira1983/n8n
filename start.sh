@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo "[START] ===== n8n + nginx startup ====="
+echo "[START] ===== n8n + nginx startup (ENTRYPOINT mode) ====="
 
 # Inicia o n8n em segundo plano
 echo "[START] Starting n8n in background..."
-n8n "$@" &
+/usr/local/bin/n8n.real "$@" &
 N8N_PID=$!
 echo "[START] n8n PID: $N8N_PID"
 
