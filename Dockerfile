@@ -7,8 +7,8 @@ RUN echo "[BUILD] Cache bust: $CACHEBUST"
 USER node
 
 # Configurações n8n
-ENV N8N_PORT=5678
+ENV N8N_PORT=8080
 ENV N8N_HOST=0.0.0.0
 ENV WEBHOOK_URL=https://n8n-production-8e2d4.up.railway.app
 
-EXPOSE 5678
+EXPOSE 8080
