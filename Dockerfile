@@ -46,6 +46,7 @@ USER node
 ENV N8N_PORT=5678
 ENV N8N_HOST=0.0.0.0
 ENV WEBHOOK_URL=https://n8n-production-8e2d4.up.railway.app
+ENV N8N_PROXY_HOPS=2
 
 # Porta que o Railway vai expor (proxy escuta aqui)
 EXPOSE 8080
