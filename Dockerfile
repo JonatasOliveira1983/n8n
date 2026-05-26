@@ -1,7 +1,7 @@
-# CACHEBUST: increment this number to force a full Docker rebuild on Railway
-ARG CACHEBUST=1
-
 FROM docker.n8n.io/n8nio/n8n
+
+# CACHEBUST: altere este valor para invalidar o cache Docker manualmente
+ARG CACHEBUST=1
 
 USER root
 
