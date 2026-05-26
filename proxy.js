@@ -36,6 +36,12 @@ const server = http.createServer((req, res) => {
   // Remove hop-by-hop headers that shouldn't be forwarded
   delete options.headers['connection'];
   delete options.headers['upgrade'];
+  
+  // Remove proxy headers to prevent n8n express-rate-limit ERR_ERL_UNEXPECTED_X_FORWARDED_FOR crash
+  delete options.headers['x-forwarded-for'];
+  delete options.headers['x-forwarded-proto'];
+  delete options.headers['x-forwarded-host'];
+  delete options.headers['x-real-ip'];
 
   const proxyReq = http.request(options, (proxyRes) => {
     // Strip iframe-blocking response headers
@@ -81,6 +87,11 @@ server.on('upgrade', (req, socket, head) => {
     method: 'GET',
     headers: { ...req.headers },
   };
+
+  delete options.headers['x-forwarded-for'];
+  delete options.headers['x-forwarded-proto'];
+  delete options.headers['x-forwarded-host'];
+  delete options.headers['x-real-ip'];
 
   const proxyReq = http.request(options);
   proxyReq.on('upgrade', (proxyRes, proxySocket, proxyHead) => {
