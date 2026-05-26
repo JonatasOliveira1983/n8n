@@ -1,24 +1,30 @@
 #!/bin/sh
 
-# Inicia o n8n em segundo plano (background)
-echo "[START] Iniciando n8n..."
-n8n &
-N8N_PID=$!
-echo "[START] n8n iniciado com PID $N8N_PID"
+echo "[START] ===== n8n + nginx startup ====="
 
-# Aguarda o n8n ficar pronto
-echo "[START] Aguardando n8n ficar pronto..."
+# Inicia o n8n em segundo plano
+echo "[START] Starting n8n in background..."
+n8n "$@" &
+N8N_PID=$!
+echo "[START] n8n PID: $N8N_PID"
+
+# Aguarda o n8n iniciar
+echo "[START] Waiting for n8n to initialize..."
 sleep 5
 
 # Verifica se n8n ainda está rodando
 if kill -0 $N8N_PID 2>/dev/null; then
-    echo "[START] n8n está rodando (PID $N8N_PID)"
+    echo "[START] n8n is running (PID $N8N_PID)"
 else
-    echo "[START] ERRO: n8n morreu! Verifique as migrações."
+    echo "[START] ERROR: n8n died during startup!"
+    exit 1
 fi
 
-# Inicia o Nginx em primeiro plano
-echo "[START] Iniciando nginx na porta 8080..."
+# Inicia o Nginx em primeiro plano (isso bloqueia, mantendo o container vivo)
+echo "[START] Starting nginx on port 8080..."
 nginx -g 'daemon off;'
 NGINX_EXIT=$?
-echo "[START] nginx finalizou com código $NGINX_EXIT"
+echo "[START] nginx exited with code $NGINX_EXIT"
+
+# Repassa o código de saída do nginx
+exit $NGINX_EXIT
